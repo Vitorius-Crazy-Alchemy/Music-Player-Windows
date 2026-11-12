@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#121826"/>
+      <stop offset="100%" stop-color="#0A0E17"/>
+    </radialGradient>
+    <linearGradient id="neon-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E5FF"/>
+      <stop offset="100%" stop-color="#2979FF"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer rounded background -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)" stroke="#00E5FF" stroke-width="4" stroke-opacity="0.4"/>
+
+  <!-- Glowing neon circle -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="url(#neon-cyan)" stroke-width="6" opacity="0.6" filter="url(#glow)"/>
+  <circle cx="256" cy="256" r="160" fill="#00E5FF" fill-opacity="0.04"/>
+
+  <!-- Dancing Man Graphic Scaled up -->
+  <g transform="translate(136, 126) scale(10)" filter="url(#glow)">
+    <path d="M8.5,5.5 C8.5,3.5 10,2 12,2 C14,2 15.5,3.5 15.5,5.5" 
+          stroke="#00E5FF" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+    <path d="M7.5,5 h1.5 v3 h-1.5 Z M15,5 h1.5 v3 h-1.5 Z" fill="#00E5FF"/>
+    <circle cx="12" cy="4.5" r="2.2" fill="#00E5FF"/>
+    <path d="M12,7 L12,13 M12,8.5 L16,6 M12,8.5 L7,10 M12,13 L9,17 L10,21 M12,13 L15,16 L14,21" 
+          stroke="#00E5FF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M19,4 L19,2 L21,2 M19,4 A1,1 0 1,1 18.99,4 Z M4,6 L4,4 L6,4 M4,6 A1,1 0 1,1 3.99,6 Z" 
+          fill="#FF4081"/>
+  </g>
+</svg>

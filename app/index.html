@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitorius Music Player Pro</title>
+    <!-- Bootstrap Icons for clean offline UI icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Native Windows Custom Titlebar -->
+    <div class="window-titlebar">
+        <div class="titlebar-brand">
+            <img src="assets/dancing_man.svg" width="18" height="18" alt="Logo">
+            <span>VITORIUS MUSIC PLAYER PRO</span>
+        </div>
+        <div class="titlebar-controls">
+            <button class="win-btn" id="winMinBtn" title="Minimize"><i class="bi bi-dash-lg"></i></button>
+            <button class="win-btn" id="winMaxBtn" title="Maximize"><i class="bi bi-square"></i></button>
+            <button class="win-btn close" id="winCloseBtn" title="Close"><i class="bi bi-x-lg"></i></button>
+        </div>
+    </div>
+
+    <!-- Application Header -->
+    <header class="app-header">
+        <div class="brand-section">
+            <img src="assets/dancing_man.svg" class="dancing-icon" alt="Dancing Man">
+            <div class="brand-title">VITORIUS PRO</div>
+        </div>
+
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" placeholder="Search songs, artists, albums, or radio...">
+        </div>
+
+        <div class="header-actions">
+            <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none;">
+            <button class="action-btn" id="addFolderBtn" title="Scan Local Directory">
+                <i class="bi bi-folder-plus"></i> Add Music Folder
+            </button>
+            <button class="action-btn" id="equalizerBtn" title="Equalizer & Sound Effects">
+                <i class="bi bi-sliders"></i> Master FX
+            </button>
+            <button class="action-btn" id="settingsBtn" title="Settings">
+                <i class="bi bi-gear"></i> Settings
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Wrapper (Sidebar + Views Container) -->
+    <div class="main-wrapper">
+        <!-- Sidebar Navigation -->
+        <nav class="app-sidebar">
+            <div class="nav-item active" data-tab="library">
+                <i class="bi bi-music-note-list"></i>
+                <span>Library</span>
+            </div>
+            <div class="nav-item" data-tab="radio">
+                <i class="bi bi-broadcast"></i>
+                <span>Global Radio</span>
+            </div>
+            <div class="nav-item" data-tab="playlists">
+                <i class="bi bi-collection-play"></i>
+                <span>Playlists</span>
+            </div>
+            <div class="nav-item" data-tab="favorites">
+                <i class="bi bi-heart"></i>
+                <span>Favorites</span>
+            </div>
+        </nav>
+
+        <!-- Dynamic Content Area -->
+        <main class="content-area">
+            <!-- Library Subtabs (Tracks, Albums, Artists, Folders) -->
+            <div class="subtabs-bar" id="subtabsBar">
+                <button class="subtab-btn active" data-subtab="tracks">Tracks</button>
+                <button class="subtab-btn" data-subtab="albums">Albums</button>
+                <button class="subtab-btn" data-subtab="artists">Artists</button>
+                <button class="subtab-btn" data-subtab="folders">Folders</button>
+            </div>
+
+            <!-- Dynamic Views Container -->
+            <div class="views-container" id="viewsContainer">
+                <!-- Injected via JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Mini Playback Bar -->
+    <footer class="playback-bar" id="playbackBar">
+        <!-- Seekbar Slider Row -->
+        <div class="playback-seekbar-row">
+            <span class="time-label" id="currentTimeLabel">00:00</span>
+            <input type="range" class="cyber-slider" id="barSeekSlider" value="0" min="0" max="100" step="0.1">
+            <span class="time-label" id="durationTimeLabel">00:00</span>
+        </div>
+
+        <!-- Controls & Track Info Row -->
+        <div class="playback-controls-row">
+            <!-- Track Info -->
+            <div class="current-track-info" title="Click to view full player">
+                <div class="current-track-art" id="barTrackArt">
+                    <img src="assets/dancing_man.svg" width="44" height="44" alt="Art">
+                </div>
+                <div class="current-track-text">
+                    <div class="current-track-title" id="barTrackTitle">Ready to Play</div>
+                    <div class="current-track-artist" id="barTrackArtist">Vitorius Music Player Pro</div>
+                </div>
+            </div>
+
+            <!-- Central Buttons -->
+            <div class="main-controls">
+                <button class="icon-btn" id="shuffleBtn" title="Shuffle (S)" onclick="vitoriusApp.toggleShuffle()">
+                    <i class="bi bi-shuffle"></i>
+                </button>
+                <button class="icon-btn" id="barPrevBtn" title="Previous (P)">
+                    <i class="bi bi-skip-start-fill" style="font-size:20px;"></i>
+                </button>
+                <button class="play-toggle-btn" id="barPlayToggle" title="Play/Pause (Space)">
+                    <i class="bi bi-play-fill"></i>
+                </button>
+                <button class="icon-btn" id="barNextBtn" title="Next (N)">
+                    <i class="bi bi-skip-end-fill" style="font-size:20px;"></i>
+                </button>
+                <button class="icon-btn" id="repeatBtn" title="Repeat Mode (R)" onclick="vitoriusApp.cycleRepeatMode()">
+                    <i class="bi bi-repeat"></i>
+                </button>
+            </div>
+
+            <!-- Extra Tools (Volume, Sleep Timer, Queue) -->
+            <div class="extra-controls">
+                <span id="sleepTimerBadge" style="display:none; font-size:11px; font-weight:bold; color:var(--neon-cyan); background:rgba(0,229,255,0.15); padding:2px 8px; border-radius:8px;"></span>
+                <div class="volume-control">
+                    <i class="bi bi-volume-up" style="color:var(--neon-cyan)"></i>
+                    <input type="range" class="cyber-slider" id="barVolumeSlider" value="85" min="0" max="100">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Full Now Playing Modal (Bottom Sheet / Fullscreen) -->
+    <div class="modal-overlay" id="nowPlayingModal">
+        <div class="modal-header">
+            <div class="now-playing-badge" id="nowPlayingBadge">NOW PLAYING</div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button class="action-btn" id="modalSleepTimerBtn" onclick="vitoriusApp.openModal('sleepTimerModal')" title="Sleep Timer">
+                    <i class="bi bi-moon-stars"></i> Sleep Timer
+                </button>
+                <button class="action-btn" id="modalLyricsBtn" title="Toggle Lyrics">
+                    <i class="bi bi-card-text"></i> Lyrics
+                </button>
+                <button class="action-btn" id="modalRecordRadioBtn" style="display:none;" title="Record Radio Stream">
+                    <i class="bi bi-record-circle" style="color:var(--cyber-pink)"></i> Record
+                </button>
+                <button class="action-btn" id="modalEqBtn" title="Audio Effects">
+                    <i class="bi bi-sliders"></i> Master FX
+                </button>
+                <button class="win-btn close" onclick="vitoriusApp.closeModal('nowPlayingModal')">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="now-playing-content">
+            <!-- Recording Indicator -->
+            <div class="record-status-pill" id="recordStatusPill" style="display:none;">
+                <div class="record-dot"></div>
+                <span>RECORDING <span id="recordTimerDisplay">00:00</span></span>
+            </div>
+
+            <!-- Artwork Section -->
+            <div id="nowPlayingArtSection" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+                <div class="now-playing-cover" id="modalCoverArt">
+                    <img src="assets/dancing_man.svg" width="130" height="130" alt="Cover">
+                </div>
+                <!-- Real-time 32-band Cyber Neon Visualizer Canvas -->
+                <canvas class="visualizer-canvas" id="visualizerCanvas"></canvas>
+            </div>
+
+            <!-- Synchronized Lyrics View -->
+            <div class="lyrics-container" id="lyricsContainer" style="display:none;"></div>
+
+            <!-- Track Meta Info -->
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size:18px; font-weight:900; color:#fff;" id="modalTrackTitle">Track Title</div>
+                    <div style="font-size:13px; color:var(--text-dim); margin-top:2px;" id="modalTrackArtist">Artist Name</div>
+                </div>
+                <button class="icon-btn fav" id="modalFavBtn" style="font-size:22px;">
+                    <i class="bi bi-heart"></i>
+                </button>
+            </div>
+
+            <!-- Modal Seek Slider -->
+            <div style="width:100%; display:flex; align-items:center; gap:12px;">
+                <input type="range" class="cyber-slider" id="modalSeekSlider" value="0" min="0" max="100" step="0.1" style="height:6px;">
+            </div>
+
+            <!-- Playback Controls -->
+            <div style="display:flex; align-items:center; justify-content:space-around; width:100%; margin-top:8px;">
+                <button class="icon-btn" id="modalShuffleBtn" onclick="vitoriusApp.toggleShuffle()">
+                    <i class="bi bi-shuffle" style="font-size:20px;"></i>
+                </button>
+                <button class="icon-btn" onclick="vitoriusApp.previous()" style="font-size:28px;">
+                    <i class="bi bi-skip-start-fill"></i>
+                </button>
+                <button class="play-toggle-btn" id="modalPlayToggle" onclick="vitoriusApp.togglePlayPause()" style="width:60px; height:60px; font-size:28px;">
+                    <i class="bi bi-play-fill"></i>
+                </button>
+                <button class="icon-btn" onclick="vitoriusApp.next()" style="font-size:28px;">
+                    <i class="bi bi-skip-end-fill"></i>
+                </button>
+                <button class="icon-btn" id="modalRepeatBtn" onclick="vitoriusApp.cycleRepeatMode()">
+                    <i class="bi bi-repeat" style="font-size:20px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Master FX / Equalizer Modal -->
+    <div class="modal-overlay" id="equalizerModal">
+        <div class="modal-header">
+            <div class="now-playing-badge"><i class="bi bi-sliders"></i> AUDIO MASTER FX</div>
+            <div style="display:flex; align-items:center; gap:16px;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--neon-cyan); cursor:pointer;">
+                    <span>EQUALIZER</span>
+                    <input type="checkbox" id="eqPowerToggle" style="accent-color:var(--neon-cyan); transform:scale(1.3);">
+                </label>
+                <button class="win-btn close" onclick="vitoriusApp.closeModal('equalizerModal')"><i class="bi bi-x-lg"></i></button>
+            </div>
+        </div>
+
+        <div style="max-width:760px; margin:0 auto; width:100%; overflow-y:auto; display:flex; flex-direction:column; gap:20px;">
+            <!-- Presets -->
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:13px; font-weight:700; color:var(--neon-cyan);">PRESETS</span>
+                <select id="eqPresetSelect" style="background:var(--surface-variant); border:1px solid var(--border-glass); color:#fff; padding:6px 14px; border-radius:12px; outline:none;">
+                    <option value="Flat">Flat</option>
+                    <option value="Rock">Rock</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Classical">Classical</option>
+                    <option value="Heavy Metal">Heavy Metal</option>
+                    <option value="Hip Hop">Hip Hop</option>
+                    <option value="Electronic">Electronic</option>
+                    <option value="Dance">Dance</option>
+                    <option value="Custom">Custom</option>
+                </select>
+            </div>
+
+            <!-- 10-Band Graphic Equalizer -->
+            <div class="eq-sliders-grid">
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_0" min="-12" max="12" value="0"><span>31Hz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_1" min="-12" max="12" value="0"><span>62Hz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_2" min="-12" max="12" value="0"><span>125Hz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_3" min="-12" max="12" value="0"><span>250Hz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_4" min="-12" max="12" value="0"><span>500Hz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_5" min="-12" max="12" value="0"><span>1kHz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_6" min="-12" max="12" value="0"><span>2kHz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_7" min="-12" max="12" value="0"><span>4kHz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_8" min="-12" max="12" value="0"><span>8kHz</span></div>
+                <div class="eq-band-col"><span>+12</span><input type="range" class="eq-vertical-slider" id="eqSlider_9" min="-12" max="12" value="0"><span>16kHz</span></div>
+            </div>
+
+            <!-- DSP Audio Effects -->
+            <div style="background:rgba(30,38,56,0.4); padding:16px; border-radius:16px; display:flex; flex-direction:column; gap:14px;">
+                <div style="font-size:13px; font-weight:800; color:var(--neon-cyan);">STEREO & SOUND ENHANCEMENT</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px;">Stereo Balance</span>
+                    <input type="range" class="cyber-slider" id="balanceSlider" min="-1" max="1" step="0.05" value="0" style="max-width:240px;">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px;">Bass Boost</span>
+                    <input type="range" class="cyber-slider" id="bassBoostSlider" min="0" max="100" value="0" style="max-width:240px;">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px;">Virtualizer (3D Spatial)</span>
+                    <input type="range" class="cyber-slider" id="virtualizerSlider" min="0" max="100" value="0" style="max-width:240px;">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px;">Loudness Enhancer</span>
+                    <input type="range" class="cyber-slider" id="loudnessSlider" min="0" max="2000" value="0" style="max-width:240px;">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px;">Playback Speed</span>
+                    <input type="range" class="cyber-slider" id="speedSlider" min="0.5" max="2.0" step="0.05" value="1.0" style="max-width:240px;">
+                </div>
+            </div>
+
+            <button class="action-btn" id="resetFxBtn" style="align-self:center;"><i class="bi bi-arrow-counterclockwise"></i> Reset FX to Default</button>
+        </div>
+    </div>
+
+    <!-- Sleep Timer Modal -->
+    <div class="modal-overlay" id="sleepTimerModal">
+        <div class="modal-header">
+            <div class="now-playing-badge"><i class="bi bi-moon-stars"></i> SLEEP TIMER</div>
+            <button class="win-btn close" onclick="vitoriusApp.closeModal('sleepTimerModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div style="max-width:380px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:10px;">
+            <button class="action-btn" onclick="vitoriusApp.startSleepTimer(15); vitoriusApp.closeModal('sleepTimerModal');">15 Minutes</button>
+            <button class="action-btn" onclick="vitoriusApp.startSleepTimer(30); vitoriusApp.closeModal('sleepTimerModal');">30 Minutes</button>
+            <button class="action-btn" onclick="vitoriusApp.startSleepTimer(45); vitoriusApp.closeModal('sleepTimerModal');">45 Minutes</button>
+            <button class="action-btn" onclick="vitoriusApp.startSleepTimer(60); vitoriusApp.closeModal('sleepTimerModal');">60 Minutes</button>
+            <button class="action-btn" onclick="vitoriusApp.startSleepTimer(90); vitoriusApp.closeModal('sleepTimerModal');">90 Minutes</button>
+            <button class="action-btn primary" onclick="vitoriusApp.cancelSleepTimer(); vitoriusApp.closeModal('sleepTimerModal');" style="margin-top:10px;">Turn Off Timer</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-header">
+            <div class="now-playing-badge"><i class="bi bi-gear"></i> SETTINGS</div>
+            <button class="win-btn close" onclick="vitoriusApp.closeModal('settingsModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div style="max-width:540px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:16px;">
+            <div style="background:rgba(30,38,56,0.4); padding:16px; border-radius:16px; display:flex; flex-direction:column; gap:12px;">
+                <div style="font-size:13px; font-weight:800; color:var(--neon-cyan);">STORAGE & PORTABILITY</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:13px; font-weight:700;">Portable Mode</div>
+                        <div style="font-size:11px; color:var(--text-dim);">Saves library, playlists, and settings in application directory</div>
+                    </div>
+                    <span style="font-size:11px; font-weight:800; color:var(--neon-cyan); background:rgba(0,229,255,0.15); padding:3px 8px; border-radius:6px;">ACTIVE</span>
+                </div>
+            </div>
+
+            <div style="background:rgba(30,38,56,0.4); padding:16px; border-radius:16px; display:flex; flex-direction:column; gap:12px;">
+                <div style="font-size:13px; font-weight:800; color:var(--neon-cyan);">KEYBOARD SHORTCUTS</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:12px;">
+                    <div><b style="color:var(--neon-cyan)">Space:</b> Play / Pause</div>
+                    <div><b style="color:var(--neon-cyan)">← / →:</b> Seek 5s</div>
+                    <div><b style="color:var(--neon-cyan)">↑ / ↓:</b> Volume +/-</div>
+                    <div><b style="color:var(--neon-cyan)">M:</b> Mute / Unmute</div>
+                    <div><b style="color:var(--neon-cyan)">S:</b> Toggle Shuffle</div>
+                    <div><b style="color:var(--neon-cyan)">R:</b> Cycle Repeat</div>
+                    <div><b style="color:var(--neon-cyan)">E:</b> Open Equalizer</div>
+                    <div><b style="color:var(--neon-cyan)">Esc:</b> Close Popups</div>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <div style="font-weight:900; letter-spacing:1px; color:var(--neon-cyan);">VITORIUS MUSIC PLAYER PRO v4.3</div>
+                <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">Windows Edition • Crafted with Advanced Cyberpunk Engine</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/radio-client.js"></script>
+    <script src="js/lyrics-helper.js"></script>
+    <script src="js/audio-engine.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
